@@ -6,7 +6,21 @@ public class Theme {
 //  PROPERTIES
 //---------------------------------------------------------------------------------------------------------------------    
    
-    private Color boardcolor1;
+    
+    public Color boardcolor1;
+
+
+    public Theme theme;
+    public void setTheme(Theme theme)
+    {
+        this.theme = theme;
+    }
+
+    public Theme getTheme()
+    {
+        return theme;
+    }
+
     public Color getBoardColor1()
     {
         return boardcolor1;
@@ -16,7 +30,7 @@ public class Theme {
         this.boardcolor1 = color;
     }
 
-    private Color boardcolor2;
+    public Color boardcolor2;
     public Color getBoardColor2()
     {
         return boardcolor2;
@@ -26,7 +40,7 @@ public class Theme {
         this.boardcolor2 = color;
     }
 
-    private Color backgroundColor;
+    public Color backgroundColor;
     public Color getBackgroundColor()
     {
         return backgroundColor;
@@ -36,7 +50,7 @@ public class Theme {
         this.backgroundColor = backgroundColor;
     }
 
-    private Color foregroundColor;
+    public Color foregroundColor;
     public Color getForegroundColor()
     {
         return foregroundColor;
@@ -47,7 +61,7 @@ public class Theme {
     }
 
 
-    private Color backgroundButtonColor;
+    public Color backgroundButtonColor;
     public Color getBackgroundButtonColor()
     {
         return backgroundButtonColor;
@@ -57,7 +71,7 @@ public class Theme {
         this.backgroundButtonColor = backgroundColor;
     }
 
-    private Color foregroundButtonColor;
+    public Color foregroundButtonColor;
     public Color getForegroundButtonColor()
     {
         return foregroundButtonColor;
@@ -72,6 +86,8 @@ public class Theme {
     public void setPlayer1Image(String image)
     {
         player1Image = image;
+         
+        System.out.println("Theme image1: " + player1Image);
     }
     public String getPlayer1Image()
     {
@@ -82,11 +98,41 @@ public class Theme {
     //to set an image for a piece......just change player1Image hopefully......?
     public void setPlayer2Image(String image)
     {
-        player2Image = image;
+        player2Image = image;;
+
+        System.out.println("Theme image2: " + player2Image);
     }
     public String getPlayer2Image()
     {
         return player2Image;
+    }
+
+
+
+    ///////
+
+    public String player1ImageKing = "";
+    public void setPlayer1ImageKing(String image)
+    {
+        player1ImageKing = image;
+         
+        System.out.println("Theme image1King: " + player1ImageKing);
+    }
+    public String getPlayer1ImageKing()
+    {
+        return player1ImageKing;
+    }
+
+    public String player2ImageKing = "";
+    //to set an image for a piece......just change player1Image hopefully......?
+    public void setPlayer2ImageKing(String image)
+    {
+        player2ImageKing = image;;
+        System.out.println("Theme image2King: " + player2ImageKing);
+    }
+    public String getPlayer2ImageKing()
+    {
+        return player2ImageKing;
     }
 
 
@@ -97,7 +143,7 @@ public class Theme {
     public Theme() {}
 
 
-    public Theme(Color foregroundcolor, Color backgroundcolor, Color foregroundbuttoncolor, Color backgroundbuttoncolor, String piece1, String piece2) 
+    public Theme(Color foregroundcolor, Color backgroundcolor, Color foregroundbuttoncolor, Color backgroundbuttoncolor, String piece1, String piece2, String king1, String king2 ) 
     {
         setForegroundColor(foregroundcolor);
         setBackgroundColor(backgroundcolor);
@@ -105,6 +151,8 @@ public class Theme {
         setBackgroundButtonColor(backgroundbuttoncolor);
         setPlayer1Image(piece1);
         setPlayer2Image(piece2);
+        setPlayer1ImageKing(king1);
+        setPlayer2ImageKing(king2);
     }
 
     /**

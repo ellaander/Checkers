@@ -4,82 +4,82 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Random;
 
 public class Board 
 {
    // https://www.tabnine.com/code/java/class-index
 
-    // Colors for the board
+    //PLAYER 1 AT TOP PLAYER 2 AT BOTTOM
     Theme theme = new Theme();
-    
+
+
+    private JFrame frame = new JFrame();
+
+    //THEMES 
     private Color COLOR_1 = new Color(250, 250, 250);
     private Color COLOR_2 = new Color(0, 0, 0);
     private Color HIGHLIGHT_COLOR = new Color(255, 255, 0);
-    private Color backgroundColor = theme.getBackgroundColor();
+    public Color backgroundColor = new Color (34,139,34);
+    public Color buttonColor = Color.GRAY;
+    public Color borderColor = new Color(0,0,0);
+    public Color fontColor = new Color(0,0,0);
+
+    int rowit; //debugging
+    int colit;
 
     ImageIcon backButtonImage = new ImageIcon("homeImage.png");
-    ImageIcon niblet = new ImageIcon("niblet2.0.png");
-    ImageIcon kernalcobb = new ImageIcon("kernal2.0.png");
-    ImageIcon frog1 = new ImageIcon("frog1.png");
-    ImageIcon frog2 = new ImageIcon("frog2.png");
-    ImageIcon frog1King = new ImageIcon("frog1King.png");
-    ImageIcon frog2King = new ImageIcon("frog2King.png");
-    ImageIcon heart1 = new ImageIcon("heart1.png");
-    ImageIcon heart2 = new ImageIcon("heart2.png");
-    ImageIcon heart1King = new ImageIcon("heart1King.png");
-    ImageIcon heart2King = new ImageIcon("heart2King.png");
 
     String player1Image = theme.getPlayer1Image();
-    String player2Image  = theme.getPlayer2Image();
+    String player2Image = "frog2.png";
+    ImageIcon player1ImageLabel = new ImageIcon(player1Image); 
+    ImageIcon player2ImageLabel = new ImageIcon(player2Image); 
 
-    private Color buttonColor = Color.WHITE;
 
-    private boolean computerPlaysRed = false;
-   
-    ArrayList<int[]> jumpedPieces = new ArrayList<>();
+    String kingImage1 = theme.getPlayer1Image();
+    String kingImage2 = "frog2King.png";
+    String winner;
 
     boolean jumpSide1;
     boolean jumpSide2;
-
-    private JLabel turnLabel;
-
-    private JLabel Player1Score;
-    private JLabel Player2Score;
-    private int player1ScoreInt = 0; //red score
-    private int player2ScoreInt = 0; //black score
-
-    ArrayList<int[]> possibleMoves = new ArrayList<>(); 
-
-    //player1 at top
-    //player2 at bottom
-
-    boolean computerMoved;
-
-    // Array to hold buttons
-    private JButton[][] buttons = new JButton[8][8];
-  
-    // Frame and panels
-    private JFrame frame = new JFrame();
-    private JPanel mainPanel = new JPanel(null); // Main panel to hold everything
-    private JPanel buttonPanel = new JPanel(); //centered on mainPanel, can be easily adjusted for size
-
-    //Monitor game status
-    private int redPiecesRemaining = 12;
-    private int blackPiecesRemaining= 12;
+    private boolean computerPlaysRed = false;
     Boolean gameOver = false;
 
-    // Text field and button
+    private JLabel turnLabel;
+    private JLabel Player1Score;
+    private JLabel Player2Score;
+
+    private int player1ScoreInt = 0; //red score
+    private int player2ScoreInt = 0; //black score
+    private int player1PiecesRemaining = 12;
+    private int player2PiecesRemaining= 12;
+    private int jumpedPieceLength;
+    private int turnCounter = 1;
+
+    private ArrayList<int[]> possibleMoves = new ArrayList<>(); 
+    private Hashtable<String, ArrayList<int[]>> jumpedPiecesHash = new Hashtable<>();
+    int[] jumpedLocation1;
+    int[] jumpedLocation2;
+    ArrayList<int[]> jumpedPieces = new ArrayList<>();
+
+
+    private JButton[][] buttons = new JButton[8][8];   // Array to hold buttons
     private JButton backButton = new JButton();
     private JButton resetBoardButton = new JButton();
 
-    //turn counter might need to be 3 for remainders idk really
-    int turnCounter = 1;
-    Piece jumpedOpponent;
 
-    public Board(boolean computerPlaysRed) 
+    private JPanel mainPanel = new JPanel(null); // Main panel to hold everything
+    private JPanel player1TurnJP = new JPanel( new BorderLayout()); // Main panel to hold everything
+    private JPanel player2TurnJP = new JPanel(new BorderLayout()); // Main panel to hold everything
+    private JPanel buttonPanel = new JPanel(); //centered on mainPanel, can be easily adjusted for size
+
+    public Board(boolean computerPlaysRed, Theme theme) 
     {
         this.computerPlaysRed = computerPlaysRed;
+        System.out.println("Theme them theme : " + theme.getPlayer1Image());
+        this.theme = theme;
+
         initializeGUI();
         initializeButtons();
         addPieces();
@@ -96,6 +96,23 @@ public class Board
 
     private void initializeGUI()
     {
+        player1Image = theme.getPlayer1Image();
+        player2Image = theme.getPlayer2Image();
+        System.out.println(player1Image);
+        System.out.println(player2Image);
+        player1ImageLabel = new ImageIcon(player1Image); 
+        player2ImageLabel = new ImageIcon(player2Image); 
+
+        kingImage1 = theme.getPlayer1ImageKing();
+        System.out.println(kingImage1);
+        kingImage2 = theme.getPlayer2ImageKing();
+        System.out.println(kingImage2);
+
+
+        Color backgroundColor = theme.getBackgroundColor();
+        Color fontColor = theme.getForegroundColor();
+ 
+        System.out.println("Board image: " + player1Image);
         //mac slay
         try{
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -127,9 +144,9 @@ public class Board
              }
          });
 
-        //initialzie the resetBoardButton, the button calls the startGameOver() method
+         //initialzie the resetBoardButton, the button calls the startGameOver() method
         resetBoardButton.setText("Restart");
-        resetBoardButton.setForeground(Color.BLACK);
+        resetBoardButton.setForeground(fontColor);
         resetBoardButton.addActionListener(new ActionListener() 
          {
              @Override
@@ -140,64 +157,72 @@ public class Board
              }
          });
 
-        resetBoardButton.setFont(new Font(backButton.getFont().getName(), Font.PLAIN, 23));
+        resetBoardButton.setFont(new Font("SERIF", Font.PLAIN, 25)); // Set font and size
 
-        resetBoardButton.setBounds(30,30,100,50);
+        resetBoardButton.setBounds(20,30,100,50);
         resetBoardButton.setOpaque(true);
-        resetBoardButton.setBackground(buttonColor);
-        resetBoardButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+        resetBoardButton.setBackground(Color.WHITE);
+        resetBoardButton.setForeground(Color.BLACK);
+        resetBoardButton.setBorder(BorderFactory.createLineBorder(borderColor, 3));
         resetBoardButton.setFocusPainted(false); 
 
-        backButton.setBounds(27, 100, 100, 90);
+        backButton.setBounds(790, 10, 100, 90);
         backButton.setIcon(backButtonImage);
         backButton.setOpaque(false); // Set the button to be transparent
         backButton.setContentAreaFilled(false); // Ensure content area is not filled
         backButton.setBorderPainted(false); // Remove border painting
-        resetBoardButton.setFocusPainted(false); 
-
+        backButton.setFocusPainted(false); 
     
         mainPanel.setSize(screenSize);
         mainPanel.setBackground(backgroundColor);
 
         turnLabel = new JLabel();
-        turnLabel.setBounds(30, 250, 200, 50); // Set bounds as needed
-        turnLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Set font and size
-        turnLabel.setForeground(Color.BLACK); //font color to black
+        turnLabel.setBounds(345, 20, 300, 50); // Set bounds as needed
+        turnLabel.setFont(new Font("SERIF", Font.BOLD, 30)); // Set font and size
+        turnLabel.setForeground(fontColor); //font color to black
         updateTurnLabel(); // Initial update
 
+        //-------------------------------------------------------------
         Player1Score = new JLabel();
-        Player1Score.setBounds(30, 350, 200, 50); // Set bounds as needed
-        Player1Score.setFont(new Font("Arial", Font.BOLD, 20)); // Set font and size
-        Player1Score.setForeground(Color.BLACK); //font color to black
-
+        Player1Score.setFont(new Font("SERIF", Font.BOLD, 25)); // Set font and size
+        Player1Score.setForeground(fontColor); //font color to black
+        player1TurnJP.add(Player1Score, BorderLayout.EAST);
+        //////////////////////////////
         Player2Score = new JLabel();
-        Player2Score.setBounds(30, 450, 200, 50); // Set bounds as needed
-        Player2Score.setFont(new Font("Arial", Font.BOLD, 20)); // Set font and size
-        Player2Score.setForeground(Color.BLACK); //font color to black
-
+        Player2Score.setFont(new Font("SERIF", Font.BOLD, 25)); // Set font and size
+        Player2Score.setForeground(fontColor); //font color to black
+        player2TurnJP.add(Player2Score, BorderLayout.EAST);
+        //////////////////////////////
+        JLabel Player1ScoreImage = new JLabel(player1ImageLabel);
+        player1TurnJP.add(Player1ScoreImage, BorderLayout.WEST);
+        JLabel Player2ScoreImage = new JLabel(player2ImageLabel);
+        player2TurnJP.add(Player2ScoreImage, BorderLayout.WEST);
+        player1TurnJP.setBackground(backgroundColor);
+        player2TurnJP.setBackground(backgroundColor);
+        //-------------------------------------------------------------
+        player1TurnJP.setBounds(750,200,110,100);
+        player2TurnJP.setBounds(750,400,110,100);
+        
 
         mainPanel.add(turnLabel);
-        mainPanel.add(Player1Score);
-        mainPanel.add(Player2Score);
-
         updateScoreLabels();
 
-        // Button panel setup
         buttonPanel.setLayout(new GridLayout(8, 8));
-        // Calculate preferred size as a percentage of the screen size
-        int preferredButtonPanelSize = (int) (Math.min(screenWidth, screenHeight) * 0.75); // 80% of the smaller dimension
+        int preferredButtonPanelSize = (int) (Math.min(screenWidth, screenHeight) * 0.75); // 75% of the smaller dimension
 
         // Set the preferred size of the button panel
         buttonPanel.setPreferredSize(new Dimension(preferredButtonPanelSize, preferredButtonPanelSize));
         buttonPanel.setBounds(175, 90, preferredButtonPanelSize, preferredButtonPanelSize);
 
-        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+        buttonPanel.setBorder(BorderFactory.createLineBorder(borderColor, 5));
 
         mainPanel.add(buttonPanel);
 
         mainPanel.add(backButton);
         mainPanel.add(resetBoardButton);
-        mainPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+        mainPanel.add(player2TurnJP);
+        mainPanel.add(player1TurnJP);
+        mainPanel.setBorder(BorderFactory.createLineBorder(borderColor, 4));
 
         frame.setResizable(false);
 
@@ -218,6 +243,7 @@ public class Board
                 buttons[i][j] = new JButton();
                 buttons[i][j].setFocusable(false);
                 buttons[i][j].setBorder(null);
+                buttons[i][j].setLayout(null);
                 buttons[i][j].setOpaque(true);
                 buttonPanel.add(buttons[i][j]);
             }
@@ -236,12 +262,14 @@ public class Board
             {
                 if ((i + j) % 2 == 0) 
                 {
-                    Piece piece = new Piece("red"); //set side
-                    piece.setPlayer1(player1Image); //changes image to red checkers piece
+                    Piece piece = new Piece("player1"); //set side
+                    piece.setIcon(player1ImageLabel); // Set the icon for the piece
                     // Center the image within the button
                     piece.setHorizontalAlignment(SwingConstants.CENTER);
                     piece.setVerticalAlignment(SwingConstants.CENTER);
-                    buttons[i][j].add(piece);
+                    // Add the piece to the button
+                    buttons[i][j].setLayout(new BorderLayout());
+                    buttons[i][j].add(piece, BorderLayout.CENTER);
                     buttons[i][j].repaint();
                 }
             }
@@ -254,13 +282,15 @@ public class Board
             {
                 if ((i + j) % 2 == 0) 
                 {
-                Piece piece = new Piece("black"); //set side
-                piece.setPLayer2(player2Image); //changes image to black checkers piece
-                // Center the image within the button
-                piece.setHorizontalAlignment(SwingConstants.CENTER);
-                piece.setVerticalAlignment(SwingConstants.CENTER);
-                buttons[i][j].add(piece);
-                buttons[i][j].repaint();
+                    Piece piece = new Piece("player2"); //set side
+                    piece.setIcon(player2ImageLabel); // Set the icon for the piece
+                    // Center the image within the button
+                    piece.setHorizontalAlignment(SwingConstants.CENTER);
+                    piece.setVerticalAlignment(SwingConstants.CENTER);
+                    // Add the piece to the button
+                    buttons[i][j].setLayout(new BorderLayout());
+                    buttons[i][j].add(piece, BorderLayout.CENTER);
+                    buttons[i][j].repaint();
                 }
             }
         }
@@ -276,13 +306,14 @@ public class Board
             }
         } 
 
-        System.out.println("Pieces are set");  //debugging
-        System.out.println("There are " + addPiecesDebugger.size() + " pieces on the board after reset");
+       // System.out.println("Pieces are set");  //debugging
+        //System.out.println("There are " + addPiecesDebugger.size() + " pieces on the board after reset");
 
         // Force the button panel to revalidate and repaint because it's dumb and won't do it by itself
         buttonPanel.revalidate();
         buttonPanel.repaint();
-        }
+
+    }
     
     // Highlight possible moves buttons
     /**
@@ -306,7 +337,7 @@ public class Board
         {
             Piece myPiece = (Piece) buttons[row][col].getComponent(0); // Get the source of the clicked button
             String myPieceSide = myPiece.getSide();
-            if((turnCounter % 2 == 1 && myPieceSide.equals("red")) || (turnCounter % 2 == 0 && myPieceSide.equals("black")))
+            if((turnCounter % 2 == 1 && myPieceSide.equals("player1")) || (turnCounter % 2 == 0 && myPieceSide.equals("player2")))
             {
                 // Get possible moves for the piece
                 ArrayList<int[]> possibleMoves = getPossibleMovesForPiece(row, col);
@@ -360,35 +391,37 @@ public class Board
 
                 buttons[newRow][newCol].setLayout(null);
                 // Set the location of the piece within the button
-                myPiece.setLocation(buttons[newRow][newCol].getWidth() / 2 - myPiece.getWidth() / 2, 
-                buttons[newRow][newCol].getHeight() / 2 - myPiece.getHeight() / 2);
+               
                 {
-                    if(myPieceSide.equals("red"))
+                    if(myPieceSide.equals("player1"))
                     {
                         if(newRow == 7)
                         {
-                            myPiece.setKinged(true);
-                            System.out.println("Red piece has been kinged");
+                            myPiece.setKingedPlayer1(true, kingImage1);
+                            System.out.println("player1 piece has been kinged");
+                            myPiece.repaint();
                         }
 
                     }
-                    else if(myPieceSide.equals("black"))
+                    else if(myPieceSide.equals("player2"))
                     {
                         if(newRow == 0)
                         {
-                            myPiece.setKinged(true);
-                            System.out.println("Black piece has been kinged");
+                            myPiece.setKingedPlayer2(true, kingImage2);
+                            System.out.println("Player2 piece has been kinged");
+                            myPiece.repaint();
                         }
                     }
 
                 }
                 buttons[i][j].repaint(); // Request a repaint of the button board otherwise it takes forever
-                turnCounter++; //increase turnCounter
+
                 resetBoard();
             
                 frame.validate();
                 frame.repaint(); 
 
+            /* 
             //----------------------------------------------------------------------------------------------------------
             // This is for debugging all the action listeners  that's happening, should ALWAYS be 64, anything else is very very very very very bad
             
@@ -405,59 +438,81 @@ public class Board
                 Piece piece = (Piece) buttons[newRow][newCol].getComponent(0);
                 System.out.println("There is a " + piece.getSide() + " piece in " + "[" + newRow + "," + newCol + "]");
                 }
-
             //----------------------------------------------------------------------------------------------------------
+            */
 
             // Check if a jump move was made
-                if (Math.abs(i - newRow) == 2 && Math.abs(j - newCol) == 2)
-                { //checks if the absolute difference in row and column indices between the original and destination positions is equal to 2, indicating a jump move.
-                    // Remove the jumped opponent from the board
+                if (Math.abs(i - newRow) > 1 || Math.abs(j - newCol) > 1)
+                { 
 
-                    int[] jumpedOpponentLocation = jumpedPieces.get(0);//get opponent piece
+                    //debugging https://www.geeksforgeeks.org/hashtable-in-java/
+        
+                    int[] move_int_jp = new int[]{i, j, newRow, newCol};
 
-                    int opponentRow1 = jumpedOpponentLocation[0];
-                    int opponentCol1 = jumpedOpponentLocation[1];
+                        //convert key to string--------------------------
+                        StringBuilder stringBuilder = new StringBuilder();
 
-                    Piece jumpedOpponent1 = (Piece) buttons[opponentRow1][opponentCol1].getComponent(0);
-                    System.out.println("have gotten opponent in row " + opponentRow1 + " col " + opponentCol1);
+                        for (int m : move_int_jp) {
+                            stringBuilder.append(m);
+                        }
 
-                    String jumpedOpponentSide = jumpedOpponent1.getSide(); //get opponenet side
+                        String result = stringBuilder.toString();
+                        //------------------------------------------------
+                
 
-                    buttons[opponentRow1][opponentCol1].remove(jumpedOpponent1); // Remove all components from the jumped cell
-                    System.out.println("have removed opponent");
-                    buttons[opponentRow1][opponentRow1].repaint(); //call immediate repaint of board otherwise it takes forever for java to catch up
+                    System.out.println("Move_int 0:" + move_int_jp[0]);
+                    System.out.println("Move_int 1:" + move_int_jp[1]);
+                    System.out.println("Move_int 2:" + move_int_jp[2]);
+                    System.out.println("Move_int 3:" + move_int_jp[3]);
 
-                    //update the number of remaining pieces on the board
-                    if (jumpedOpponentSide.equals("red"))
-                    {
-                        redPiecesRemaining--;
-                        System.out.println("There are " + redPiecesRemaining + " red pieces remaing" );
-                        checkEndGame();
+                    System.out.println("Row: " + i + " Col: " + j + " Jump Row: " + newRow + " Jump Col: " + newCol);
+
+                    ArrayList<int[]> jumpedPiecesLocationfromHash = (jumpedPiecesHash.get(result));
+                    jumpedPieceLength = jumpedPiecesLocationfromHash.size();
+
+
+                    for (int[] move : jumpedPiecesLocationfromHash) {
+                        int jumpedRow = move[0];
+                        int jumpedCol = move[1];
+                        
+                        Piece piece = (Piece) buttons[jumpedRow][jumpedCol].getComponent(0);
+                        buttons[jumpedRow][jumpedCol].remove(piece);
+                        System.out.println("Piece at " + jumpedRow + " : " + jumpedCol + " removed");
+                        buttons[jumpedRow][jumpedCol].repaint();
                     }
-                    else if (jumpedOpponentSide.equals("black"))
+
+
+                    if(myPieceSide.equals("player1"))
                     {
-                        blackPiecesRemaining--;
-                        System.out.println("There are " + blackPiecesRemaining + " black pieces remaing" );
-                        checkEndGame();
+                        player2PiecesRemaining = player2PiecesRemaining - jumpedPieceLength;
                     }
+                    else if(myPieceSide.equals("player2"))
+                    {
+                        player1PiecesRemaining = player1PiecesRemaining - jumpedPieceLength;
+                        System.out.println("Player1 pieces remaing " + player1PiecesRemaining);
+                    }
+                    
                 }
             } 
             else 
             {
-                System.out.println("There is a piece there in cell [" + newRow + "," + newCol + "] : Component = 0: Move"); //debugging
+                //System.out.println("There is a piece there in cell [" + newRow + "," + newCol + "] : Component = 0: Move"); //debugging
             }
         }
         else 
         {
-        System.out.println("There is no piece in cell [" + i + "," + j + "] : getComponentCount() > 0: Move" ); //debugging
+        //System.out.println("There is no piece in cell [" + i + "," + j + "] : getComponentCount() > 0: Move" ); //debugging
         }  
         updateTurnLabel();
+        turnCounter++; //increase turnCounter
+        System.out.println(turnCounter);
         resetBoard();
         updateScoreLabels();
-        jumpedPieces.clear();
+        checkEndGame();
         System.out.println("TURN OVER--------------------------------------------------------"); //just to organize the terminal a little more
     }
 
+    /* 
     //debugging method, counts the total number of action listeners on the button grid, should be consistent at 64. 
     //should be 1 actionlisteners on each cell, anything other number is BAD BAD BAD BAD BAD BAD BAD BAD VERY VERY BAD NO
     private int countActionListeners() 
@@ -473,6 +528,7 @@ public class Board
         }
         return count;
     }
+    */
 
     /*
     this method checks the side of pieces that are juumped. "side" represents
@@ -481,7 +537,7 @@ public class Board
     */
     private String getOpponentSide(String side) 
     {
-        return side.equals("red") ? "black" : "red";
+        return side.equals("player1") ? "player2" : "player1";
     }
 
     /*
@@ -553,27 +609,114 @@ public class Board
      * I'm not sure what we want to do when the game has ended, so right now I just have it as removing all the actionlisteners from the buttons 
      * so you can't press anything. Basically just a holder method for now
      */
-    private void endGame()
+    private void endGame(JFrame parentFrame) 
     {
-        for (int i = 0; i < 8; i++) 
-        {
-            for (int j = 0; j < 8; j++) 
-            {
-                //remove all prior actionlisteneres
-                for( ActionListener al : buttons[i][j].getActionListeners() ) 
-                {
-                    buttons[i][j].removeActionListener( al );
-                }
-                
+        winner = getWinner();
+        JDialog dialog = new JDialog(parentFrame, true);
+        
+        // Set background color of the content pane
+        JPanel contentPane = new JPanel(null);
+        contentPane.setBackground(new Color(230,230,230)); // Set the desired background color
+        dialog.setContentPane(contentPane);
+    
+        dialog.setLayout(null); // Set layout to null for absolute positioning
+    
+        JLabel messageLabel = new JLabel(winner + " wins!");
+        messageLabel.setHorizontalAlignment(JLabel.CENTER);
+        messageLabel.setForeground(fontColor); 
+        messageLabel.setBounds(160, 20, 200, 30); // Set bounds for position and size
+        Font labelFont = messageLabel.getFont();
+        messageLabel.setFont(new Font(labelFont.getName(), Font.PLAIN, 30)); // Increase font size to 20
+
+        contentPane.add(messageLabel);
+
+        JLabel turnLabelPopup = new JLabel("Total Score" );
+        turnLabelPopup.setHorizontalAlignment(JLabel.CENTER);
+        turnLabelPopup.setForeground(fontColor); 
+        turnLabelPopup.setBounds(10, 80, 200, 30); // Set bounds for position and size
+        Font turnLabelFont = turnLabelPopup.getFont();
+        turnLabelPopup.setFont(new Font(turnLabelFont.getName(), Font.PLAIN, 25)); // Increase font size to 20
+        turnLabelPopup.setFont(new Font("SERIF", Font.PLAIN, 25)); // Set font and size
+        contentPane.add(turnLabelPopup);
+        ////////////////////
+
+        JPanel player1ScorePopup = new JPanel(new BorderLayout());
+        JPanel player2ScorePopup = new JPanel(new BorderLayout());
+          //-------------------------------------------------------------
+          Player1Score = new JLabel(" - " + (12-player2PiecesRemaining));
+          Player1Score.setFont(new Font("Arial", Font.BOLD, 25)); // Set font and size
+          Player1Score.setForeground(fontColor); //font color to black
+          player1ScorePopup.add(Player1Score, BorderLayout.EAST);
+          //////////////////////////////
+          Player2Score = new JLabel(" - " + (12-player1PiecesRemaining));
+          Player2Score.setFont(new Font("Arial", Font.BOLD, 25)); // Set font and size
+          Player2Score.setForeground(fontColor); //font color to black
+          player2ScorePopup.add(Player2Score, BorderLayout.EAST);
+          //////////////////////////////
+          JLabel Player1ScoreImage = new JLabel(player1ImageLabel);
+          player1ScorePopup.add(Player1ScoreImage, BorderLayout.WEST);
+          JLabel Player2ScoreImage = new JLabel(player2ImageLabel);
+          player2ScorePopup.add(Player2ScoreImage, BorderLayout.WEST);
+          player1ScorePopup.setBackground(new Color(230,230,230));
+          player2ScorePopup.setBackground(new Color(230,230,230));
+          //-------------------------------------------------------------
+          player1ScorePopup.setBounds(30,115,110,80);
+          player2ScorePopup.setBounds(30,200,110,80);
+          contentPane.add(player1ScorePopup);
+          contentPane.add(player2ScorePopup);
+        /////////////////////////
+        JButton homeButtonPop = new JButton("Home");
+        homeButtonPop.setFocusPainted(false); 
+        homeButtonPop.setBackground(buttonColor);
+        homeButtonPop.setForeground(fontColor); 
+        homeButtonPop.setFont(new Font(labelFont.getName(), Font.BOLD, 20)); // Increase font size to 20
+        homeButtonPop.setBounds(70, 300, 150, 40); // Set bounds for position and size
+        homeButtonPop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Close the dialog
+                frame.dispose();
+                GUI.frame.setState(Frame.NORMAL);
             }
-        }
-        System.out.println("End game method has been called");
+        });
+        contentPane.add(homeButtonPop);
+    
+        JButton restartButtonPop = new JButton("Play Again");        
+        restartButtonPop.setFocusPainted(false); 
+        restartButtonPop.setBackground(buttonColor);
+        restartButtonPop.setForeground(fontColor); 
+        restartButtonPop.setFont(new Font(labelFont.getName(), Font.BOLD, 20)); // Increase font size to 20
+        restartButtonPop.setBounds(290, 300, 150, 40); // Set bounds for position and size
 
-        //POP up Panel....home and restart
-        //score, winner, time, total moves, for each side?.....
+        restartButtonPop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Close the dialog
+                removeAllPieces();
+                resetBoard();
+                player1PiecesRemaining = 12;
+                player2PiecesRemaining = 12;
+                initalizeActionListeners();
+                // Add new pieces
+                addPieces();
+                // Verify pieces remaining
+                System.out.println("There are " + player1PiecesRemaining + " player1 pieces remaining");
+                System.out.println("There are " + player2PiecesRemaining + " player2 pieces remaining");
+                updateScoreLabels();
+                gameOver = false; // Reset game boolean
+            }
+        });
+        contentPane.add(restartButtonPop);
 
+        contentPane.add(restartButtonPop);
+
+        restartButtonPop.setBorder(BorderFactory.createLineBorder(borderColor, 3));
+        homeButtonPop.setBorder(BorderFactory.createLineBorder(borderColor, 3));
+        contentPane.setBorder(BorderFactory.createLineBorder(borderColor, 3));
+    
+        dialog.setSize(500, 400); // Set the size of the dialog
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.setVisible(true);
     }
-
+    
     /*
      * This is called when you want to restart the game. It removes all prior actionlisteners and pieces from the board
      * It then reinitializes new actionlisteners in the resetBoard() method. 
@@ -602,66 +745,63 @@ public class Board
             }
         }
         resetBoard();
-        redPiecesRemaining = 12;
-        blackPiecesRemaining = 12;
+        player1PiecesRemaining = 12;
+        player2PiecesRemaining = 12;
         initalizeActionListeners();
         //add new pieces
         addPieces();
+        turnCounter = 1;
         //verify pieces remaining
-        System.out.println("There are " + redPiecesRemaining + " red pieces remaing" );
-        System.out.println("There are " + blackPiecesRemaining + " black pieces remaing" );
+        System.out.println("There are " + player1PiecesRemaining + " player1 pieces remaing" );
+        System.out.println("There are " + player2PiecesRemaining + " player2 pieces remaing" );
         updateScoreLabels();
         gameOver = false; //reset game boolean
         buttonPanel.repaint();
     }
 
-    public void computerMove() 
-    {
-        // Generate all possible moves for the computer player
-        ArrayList<int[]> possibleMovesComputer = new ArrayList<>();
-    
-        // Find all pieces belonging to the player
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) 
-            {
-                if (buttons[i][j].getComponentCount() > 0) 
-                {
-                    Piece piece = (Piece) buttons[i][j].getComponent(0);
-                    if (piece.getSide().equals("red")) 
-                    {
+    private void computerMove() {
+        ArrayList<int[]> redPiecesWithMoves = new ArrayList<>();
 
-                        // Add all possible moves for this piece to the list
-                        ArrayList<int[]> moves = getPossibleMovesForPiece(i, j);
-                        possibleMovesComputer.addAll(moves);
+        // Step 1: Find red pieces with available moves
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (buttons[i][j].getComponentCount() > 0) {
+                    Piece currentPiece = (Piece) buttons[i][j].getComponent(0);
+                    if (currentPiece.getSide().equals("player1")) {
+                        ArrayList<int[]> possibleMoves = getPossibleMovesForPiece(i, j);
+                        if (!possibleMoves.isEmpty()) {
+                            redPiecesWithMoves.add(new int[]{i, j});
+                        }
                     }
                 }
             }
         }
-    
-        // If there are no possible moves for the computer, return
-        if (possibleMovesComputer.isEmpty()) 
-        {
+
+        // If there are no red pieces with available moves, return
+        if (redPiecesWithMoves.isEmpty()) {
+            System.out.println("No player 1 pieces with available moves.");
             return;
         }
-    
-        // Randomly select a move from the list of possible moves
+
+        // Randomly select a red piece with available moves
         Random rand = new Random();
+        int[] selectedPiece = redPiecesWithMoves.get(rand.nextInt(redPiecesWithMoves.size()));
+        int selectedPieceRow = selectedPiece[0];
+        int selectedPieceCol = selectedPiece[1];
 
-        //select a random move in the possibleMoves arraylist
-        int rand_int = rand.nextInt(possibleMovesComputer.size());
-        int[] selectedMove = possibleMovesComputer.get(rand_int);
+        // Get possible moves for the selected piece
+        ArrayList<int[]> possibleMoves = getPossibleMovesForPiece(selectedPieceRow, selectedPieceCol);
 
-        // Extract the move coordinates from int[]
-        int row = selectedMove[0];
-        int col = selectedMove[1];
+        // Randomly select a move from the possible moves
+        int[] selectedMove = possibleMoves.get(rand.nextInt(possibleMoves.size()));
         int newRow = selectedMove[2];
         int newCol = selectedMove[3];
-    
-        // Move the piece to the randomly chosen move
+
+        // Introduce a delay before the computer makes its move for visual effect
         Timer timer = new Timer(500, e -> 
         {
             // Move the piece to the randomly chosen move after 1 second
-            Move(row, col, newRow, newCol);
+            Move(selectedPieceRow, selectedPieceCol, newRow, newCol);
         });
         timer.setRepeats(false); // Set the timer to only fire once
         timer.start(); // Start the timer to move
@@ -675,9 +815,10 @@ public class Board
         jumpSide2 = false;
 
         possibleMoves.clear();
+        jumpedPiecesHash.clear();
 
-        System.out.println("There are jumped pieces " + jumpedPieces.size());
-
+        //int rowit;
+        //int colit;
     
         Piece piece = (Piece) buttons[row][col].getComponent(0);  // Get the piece at the specified position
         String pieceColor = piece.getSide();  // Get the color of the piece
@@ -687,7 +828,7 @@ public class Board
         int[] dx; // Array to store column
         
         // Define movement directions based on piece color
-        if (pieceColor.equals("red")) 
+        if (pieceColor.equals("player1")) 
         {
             // Red pieces move downwards
             dy = new int[]{1, 1};
@@ -738,24 +879,61 @@ public class Board
                 // Add jump move to possible moves
                 int[] move_ints = new int[]{row, col, jumpRow, jumpCol};
                 possibleMoves.add(move_ints); 
-                
-                int[] jumpedOpponentLocation1 = new int[]{newRow, newCol};
-                jumpedPieces.add(jumpedOpponentLocation1);
 
-                findDoubleJumpMoves(row, col, jumpRow, jumpCol, dy, dx, pieceColor); 
+                ArrayList<int[]> jumpedPiecesLocation = new ArrayList<>();
+                int[] jumpedOpponentLocation1 = new int[]{newRow, newCol};
+
+                jumpedPiecesLocation.add(jumpedOpponentLocation1);
+
+                
+                System.out.println("Move location:");
+                System.out.println("Row: " + row + " Col: " + col + " Jump Row: " + jumpRow + " Jump Col: " + jumpCol);
+                System.out.println("Jumped Pieces Locations:");
+                for(int[] jumpedOpponentLocation : jumpedPiecesLocation) 
+                {
+                    rowit = jumpedOpponentLocation[0];
+                    colit = jumpedOpponentLocation[1];
+                System.out.println("Row: " + rowit + ", Column: " + colit);
+                }
+                
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (int k : move_ints) {
+                    stringBuilder.append(k);
+                }
+
+                String result = stringBuilder.toString();
+
+                jumpedPiecesHash.put(result, jumpedPiecesLocation);
+                //System.out.println("Hash before total: " + jumpedPiecesHash.get(result));
+                
+
+                findDoubleJumpMoves(row, col, jumpRow, jumpCol, dy, dx, pieceColor, newRow, newCol); 
+
+                //jumpedPieces.add(jumpedOpponentLocation1);
+      
             }
         }
     return possibleMoves;
     }
 
-    private void findDoubleJumpMoves(int row, int col, int jumpRow, int jumpCol, int[] dy, int[] dx, String pieceColor) 
+    private void findDoubleJumpMoves(int row, int col, int jumpRow, int jumpCol, int[] dy, int[] dx, String pieceColor, int newRow, int newCol) 
     {
-
         for (int k = 0; k < dx.length; k++) {
+
+        ArrayList<int[]> jumpedPiecesLocation = new ArrayList<>();
+        //int rowit;
+        //int colit;
+
+        
 
             // Calculate new position and jump position
             int newRow1 = jumpRow + dy[k]; // New row index
             int newCol1 = jumpCol + dx[k];  // New column index
+
+            int firstNewRow = newRow;
+            int firstNewcol = newCol;
     
             // Jump position
             int jumpRow1 = jumpRow + 2 * dy[k];
@@ -763,10 +941,44 @@ public class Board
     
             if (isValidCell(newRow1, newCol1) && buttons[newRow1][newCol1].getComponentCount() != 0 &&
                     isValidCell(jumpRow1, jumpCol1) && buttons[jumpRow1][jumpCol1].getComponentCount() == 0 &&
-                    ((Piece) buttons[newRow1][newCol1].getComponent(0)).getSide().equals(getOpponentSide(pieceColor))) {
+                    ((Piece) buttons[newRow1][newCol1].getComponent(0)).getSide().equals(getOpponentSide(pieceColor))) 
+                {
                 // Add jump move to possible moves
-                int[] jump_int = new int[]{row, col, jumpRow1, jumpCol1};
-                possibleMoves.add(jump_int);
+                int[] move_ints = new int[]{row, col, jumpRow1, jumpCol1};
+                possibleMoves.add(move_ints);
+
+                      //convert key to string--------------------------
+                      StringBuilder stringBuilder = new StringBuilder();
+
+                      for (int m : move_ints) {
+                          stringBuilder.append(m);
+                      }
+      
+                      String result = stringBuilder.toString();
+                      //------------------------------------------------
+                      
+
+                jumpedLocation1 = new int[]{firstNewRow, firstNewcol};
+                jumpedLocation2 = new int[]{newRow1, newCol1};
+
+                jumpedPiecesLocation.add(jumpedLocation1);
+                jumpedPiecesLocation.add(jumpedLocation2);
+
+                jumpedPiecesHash.put(result, jumpedPiecesLocation);
+
+                System.out.println("Hash before total: " + jumpedPiecesHash.get(result));
+                System.out.println("Move location:");
+                System.out.println("Row: " + row + " Col: " + col + " Jump Row: " + jumpRow1 + " Jump Col: " + jumpCol1);
+                System.out.println("Jumped Pieces Locations Find Double Jumps:");
+
+                 for(int[] jumpedOpponentLocation : jumpedPiecesLocation) 
+                {
+                    rowit = jumpedOpponentLocation[0];
+                    colit = jumpedOpponentLocation[1];
+               System.out.println("Row: " + rowit + ", Column: " + colit);
+                }
+                
+                
             }
         }
     }
@@ -774,35 +986,67 @@ public class Board
     private void updateTurnLabel() 
     {
         if (turnCounter % 2 == 1) {
-            turnLabel.setText("Red's Turn!");
+            turnLabel.setText("Player 1's Turn!");
         } else {
-            turnLabel.setText("Black's Turn!");
+            turnLabel.setText("Player 2's Turn!");
         }
     }
 
     private void updateScoreLabels() 
 
     {
-        player1ScoreInt = 12 - blackPiecesRemaining;
-        player2ScoreInt = 12 - redPiecesRemaining;
+        player1ScoreInt = 12 - player2PiecesRemaining;
+        player2ScoreInt = 12 - player1PiecesRemaining;
 
-        Player1Score.setText("Red score: " + player1ScoreInt);
-        Player2Score.setText("Black score: " + player2ScoreInt);
+        Player1Score.setText(" - " + player1ScoreInt);
+        Player2Score.setText(" - " + player2ScoreInt);
     }
 
     private void checkEndGame()
     {
-        if(blackPiecesRemaining == 0) //game over if no black pieces remain
+        if(player2PiecesRemaining == 0) //game over if no black pieces remain
         {
             gameOver = true;
             System.out.println("The game is over");
-            endGame();
+            endGame(frame);
         }
-        if(redPiecesRemaining == 0) //game over if no black pieces remain
+        if(player1PiecesRemaining == 0) //game over if no black pieces remain
         {
             gameOver = true;
             System.out.println("The game is over");
-            endGame();
+            endGame(frame);
+        }
+    }
+
+    private String getWinner()
+    {
+        if(player1PiecesRemaining == 0)
+        {
+            winner = "Player 2";
+        }
+        else if (player2PiecesRemaining == 0)
+        {
+            winner = "Player 1";
+        }
+
+        return winner;
+    }
+
+    public void removeAllPieces()
+    {
+        for (int i = 0; i < 8; i++) 
+        {
+            for (int j = 0; j < 8; j++) 
+            {
+                //remove all pieces
+                if (buttons[i][j].getComponentCount() > 0) 
+                {
+                    Piece removedPiece = (Piece) buttons[i][j].getComponent(0); 
+                    buttons[i][j].remove(removedPiece);
+                    buttons[i][j].repaint();
+
+                }
+            }
         }
     }
 }

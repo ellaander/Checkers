@@ -1,4 +1,5 @@
 
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -10,6 +11,14 @@ import java.io.File;
 public class GUI 
 {
 // Inside your constructor or initialization method
+Theme one = new Theme(new Color(252,224,61),new Color(115, 14, 65), Color.BLACK, new Color(255, 243, 176),"niblet.png","kernelcobb.png", "nibletking.png", "kernelcobbking.png" );
+Theme two = new Theme(new Color(160, 210, 165),new Color(0, 60, 40), new Color(0, 45, 25), new Color(190, 160, 110),"frog1.png","frog2.png", "frog1king.png", "frog2king.png");
+Theme three = new Theme(new Color(210, 210, 210),new Color(10, 0, 90), Color.BLACK, new Color(210, 210, 210),"colorblindPiece1.png","colorblindPiece2.png", "colorblindPiece1King.png", "colorblindPiece2King.png");
+Theme four = new Theme(new Color(252,224,61),new Color(115, 14, 65), Color.BLACK, new Color(255, 243, 176),"niblet.png","kernelcobb.png", "nibletking.png", "kernelcobbking.png");
+Theme five = new Theme(new Color(180, 0, 90),new Color(255, 200, 210), Color.BLACK, new Color(255, 190, 190),"heart1.png","heart2.png", "heart1King.png", "heart2King.png");
+Theme six = new Theme(new Color(10, 0, 90),new Color(210, 210, 210), new Color(10, 0, 90), new Color(240,240,240),"colorblindPiece1.png","colorblindPiece2.png", "colorblindPiece1King.png", "colorblindPiece2King.png");
+
+Theme theme = new Theme();
 
     static JFrame frame;
     private JPanel mainPanel;
@@ -58,15 +67,14 @@ public class GUI
         settingsPanel.setPreferredSize(screenSize);
 
         // default theme 
-        String player1Image = "niblet2.0.png";
-        String player2Image = "kernal2.0.png";
         //String player1KingImage = "frog1King.png";
         //String player2KingImage = "frog2King.png";
-        Theme theme = new Theme(new Color(252,224,61),new Color(115, 14, 65), Color.BLACK, new Color(255, 243, 176),player1Image,player2Image);
-        Color backgroundColor = theme.getBackgroundColor();
-        Color textColor = theme.getForegroundColor();
-        Color backgroundButtonColor = theme.getBackgroundButtonColor();
-        Color foregroundButtonColor = theme.getForegroundButtonColor();
+        theme.setTheme(one);
+        Color backgroundColor = one.getBackgroundColor();
+        Color textColor = one.getForegroundColor();
+        Color backgroundButtonColor = one.getBackgroundButtonColor();
+        Color foregroundButtonColor = one.getForegroundButtonColor();
+
         
         //home component variables 
         int homey1 = 380;
@@ -102,6 +110,7 @@ public class GUI
         homeComponent2.setBackground(backgroundButtonColor);
         homeComponent2.setForeground(foregroundButtonColor);
         homeComponent2.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        homeComponent2.setOpaque(true);
         mainPanel.add(homeComponent2);
 
         JButton homeComponent3 = new JButton("Settings");
@@ -110,6 +119,7 @@ public class GUI
         homeComponent3.setBackground(backgroundButtonColor);
         homeComponent3.setForeground(foregroundButtonColor);
         homeComponent3.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        homeComponent3.setOpaque(true);
         mainPanel.add(homeComponent3);
 
         JButton homeComponent4 = new JButton("How to Play");
@@ -118,6 +128,7 @@ public class GUI
         homeComponent4.setBackground(backgroundButtonColor);
         homeComponent4.setForeground(foregroundButtonColor);
         homeComponent4.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        homeComponent4.setOpaque(true);
         mainPanel.add(homeComponent4);
 
         JButton homeComponent5 = new JButton("Play against the Computer");
@@ -126,21 +137,16 @@ public class GUI
         homeComponent5.setBackground(backgroundButtonColor);
         homeComponent5.setForeground(foregroundButtonColor);
         homeComponent5.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        homeComponent5.setOpaque(true);
         mainPanel.add(homeComponent5); 
 
-        // Text panel setup
-        JLabel rectangle = new JLabel();
-        rectangle.setBounds(screenSizeX/2 - 375, 75, 750, 250);
-        rectangle.setBackground(Color.WHITE);
-        rectangle.setForeground(Color.WHITE);
-        rectangle.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
-        mainPanel.add(rectangle);
 
         JLabel cobber = new JLabel("COBBER");
         cobber.setBounds(screenSizeX/2 - 269, 75, 538, 125);
         cobber.setFont(new Font("SERIF", Font.BOLD, 125));
         cobber.setBackground(backgroundColor);
         cobber.setForeground(textColor);
+        cobber.setOpaque(true);
         //cobber.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); (for figuring out width for centering)
         mainPanel.add(cobber);
 
@@ -149,9 +155,18 @@ public class GUI
         checkers.setFont(new Font("SERIF", Font.BOLD, 125));
         checkers.setBackground(backgroundColor);
         checkers.setForeground(textColor);
+        cobber.setOpaque(true);
         //checkers.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); (for figuring out width for centering)
         mainPanel.add(checkers);
 
+        // Text panel setup
+        JLabel rectangle = new JLabel();
+        rectangle.setBounds(screenSizeX/2 - 375, 70, 750, 250);
+        rectangle.setBackground(backgroundColor);
+        //rectangle.setForeground(backgroundColor);
+        rectangle.setOpaque(true);
+        rectangle.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+        mainPanel.add(rectangle);
 // settings page ------------------------------------------------------------------------------------------------------        
     //JButtons setup - 
     // first, it initializes and creates the button and the title
@@ -163,6 +178,7 @@ public class GUI
         settingsComponent1.setBackground(backgroundButtonColor);
         settingsComponent1.setForeground(foregroundButtonColor);
         settingsComponent1.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent1.setOpaque(true);
         settingsPanel.add(settingsComponent1);
 
         JButton settingsComponent2 = new JButton("Frogs");
@@ -171,6 +187,7 @@ public class GUI
         settingsComponent2.setForeground(foregroundButtonColor);
         settingsComponent2.setFont(new Font("SERIF", Font.BOLD, 20));
         settingsComponent2.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent2.setOpaque(true);
         settingsPanel.add(settingsComponent2);
 
         JButton settingsComponent3 = new JButton("Colorblind 1");
@@ -179,6 +196,7 @@ public class GUI
         settingsComponent3.setBackground(backgroundButtonColor);
         settingsComponent3.setForeground(foregroundButtonColor);
         settingsComponent3.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent3.setOpaque(true);
         settingsPanel.add(settingsComponent3);
 
         JButton settingsComponent4 = new JButton("Cool Revenge");
@@ -187,6 +205,7 @@ public class GUI
         settingsComponent4.setBackground(backgroundButtonColor);
         settingsComponent4.setForeground(foregroundButtonColor);
         settingsComponent4.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent4.setOpaque(true);
         settingsPanel.add(settingsComponent4);
 
         JButton settingsComponent5 = new JButton("July");
@@ -195,6 +214,7 @@ public class GUI
         settingsComponent5.setBackground(backgroundButtonColor);
         settingsComponent5.setForeground(foregroundButtonColor);
         settingsComponent5.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent5.setOpaque(true);
         settingsPanel.add(settingsComponent5);
 
         JButton settingsComponent6 = new JButton("Summer");
@@ -203,6 +223,7 @@ public class GUI
         settingsComponent6.setBackground(backgroundButtonColor);
         settingsComponent6.setForeground(foregroundButtonColor);
         settingsComponent6.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent6.setOpaque(true);
         settingsPanel.add(settingsComponent6);
 
         JButton settingsComponent7 = new JButton("Concordia 2");
@@ -211,6 +232,7 @@ public class GUI
         settingsComponent7.setBackground(backgroundButtonColor);
         settingsComponent7.setForeground(foregroundButtonColor);
         settingsComponent7.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent7.setOpaque(true);
         settingsPanel.add(settingsComponent7);
 
         JButton settingsComponent8 = new JButton("Pink");
@@ -219,6 +241,7 @@ public class GUI
         settingsComponent8.setBackground(backgroundButtonColor);
         settingsComponent8.setForeground(foregroundButtonColor);
         settingsComponent8.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent8.setOpaque(true);
         settingsPanel.add(settingsComponent8);
 
         JButton settingsComponent9 = new JButton("Colorblind 2");
@@ -227,6 +250,7 @@ public class GUI
         settingsComponent9.setBackground(backgroundButtonColor);
         settingsComponent9.setForeground(foregroundButtonColor);
         settingsComponent9.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        settingsComponent9.setOpaque(true);
         settingsPanel.add(settingsComponent9);
 
         JButton backButton_Settings = new JButton("Back");
@@ -234,6 +258,7 @@ public class GUI
         backButton_Settings.setFont(new Font("SERIF", Font.BOLD, 20));
         backButton_Settings.setBackground(backgroundButtonColor);
         backButton_Settings.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        backButton_Settings.setOpaque(true);
         settingsPanel.add(backButton_Settings);
 
         // adding text to the panel
@@ -243,6 +268,7 @@ public class GUI
         soundLabel.setForeground(textColor); 
         soundLabel.setBackground(backgroundColor);
         soundLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+        soundLabel.setOpaque(true);
         settingsPanel.add(soundLabel);
 
         JLabel themesLabel = new JLabel("THEMES");
@@ -251,6 +277,7 @@ public class GUI
         themesLabel.setForeground(textColor); 
         themesLabel.setBackground(backgroundColor);
         themesLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+        themesLabel.setOpaque(true);
         settingsPanel.add(themesLabel);
         
 
@@ -273,6 +300,7 @@ public class GUI
         backButton_HowToPlay.setFont(new Font("SERIF", Font.BOLD, 20));
         backButton_HowToPlay.setBackground(Color.WHITE);
         backButton_HowToPlay.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        backButton_HowToPlay.setOpaque(true);
         howToPlayPanel.add(backButton_HowToPlay);
 
         JLabel howtoplayHTPpage = new JLabel("HOW TO PLAY");
@@ -280,6 +308,7 @@ public class GUI
         howtoplayHTPpage.setFont(new Font("SERIF", Font.BOLD, 50));
         howtoplayHTPpage.setBackground(new Color(230,230,230));
         howtoplayHTPpage.setForeground(Color.BLACK);
+        howtoplayHTPpage.setOpaque(true);
         //howtoplayHTPpage.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); this is for finding the width
         howToPlayPanel.add(howtoplayHTPpage);
 
@@ -312,6 +341,7 @@ public class GUI
         description.setFont(new Font("Times New Roman", Font.BOLD, 15));
         description.setBounds(70,200,415,510);
         description.setBackground(new Color(230,230,230));
+        description.setOpaque(true);
         howToPlayPanel.add(description);
 
         JTextArea moveExample = new JTextArea("The piece highlighted in red can move to either\n" +
@@ -320,6 +350,7 @@ public class GUI
         moveExample.setBounds(525,395,300,30);
         moveExample.setBackground(new Color(230,230,230));
         moveExample.setForeground(Color.BLACK);
+        moveExample.setOpaque(true);
         howToPlayPanel.add(moveExample);
 
         JTextArea jumpExample = new JTextArea("The piece highlighted in red can jump over the\n" +
@@ -340,7 +371,8 @@ public class GUI
 
                 computerPlays = false;
                 frame.setState(Frame.ICONIFIED);
-                new Board(computerPlays);
+
+                new Board(computerPlays, theme.getTheme());
 
             }
         });
@@ -367,9 +399,7 @@ public class GUI
             {
                 computerPlays = true;
                 frame.setState(Frame.ICONIFIED);
-                new Board(computerPlays);
-
-            
+                new Board(computerPlays, theme.getTheme());
             }
         });
 
@@ -379,23 +409,23 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String player1KingImage = "frog1King.png";
-                String player2KingImage = "frog2King.png";
-
                 //theme creation
-                Theme theme = new Theme(new Color(252,224,61),new Color(115, 14, 65), Color.BLACK, new Color(255, 243, 176),"niblet2.0.png","kernal2.0.png");
-                Color backgroundColor = theme.getBackgroundColor();
-                Color textColor = theme.getForegroundColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(one);
+                System.out.println("Theme one");
+                System.out.println(theme.getTheme());
+                Color backgroundColor = one.getBackgroundColor();
+                Color textColor = one.getForegroundColor();
+                Color backgroundButtonColor = one.getBackgroundButtonColor();
+                Color foregroundButtonColor = one.getForegroundButtonColor();
 
+                
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -449,23 +479,24 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String player1KingImage = "frog1King.png";
-                String player2KingImage = "frog2King.png";
 
                 //theme creation
-                Theme theme = new Theme(new Color(160, 210, 165),new Color(0, 45, 25), new Color(0, 45, 25), new Color(190, 160, 110),"frog1.png","frog2.png");
-                Color textColor = theme.getForegroundColor();
-                Color backgroundColor = theme.getBackgroundColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(two);
+                System.out.println("Theme two");
+                System.out.println(theme.getTheme());
+                Color textColor = two.getForegroundColor();
+                Color backgroundColor = two.getBackgroundColor();
+                Color foregroundButtonColor = two.getForegroundButtonColor();
+                Color backgroundButtonColor = two.getBackgroundButtonColor();
+
 
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -519,23 +550,24 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String player1KingImage = "frog1King.png";
-                String player2KingImage = "frog2King.png";
 
                 //theme creation
-                Theme theme = new Theme(new Color(210, 210, 210),new Color(10, 0, 90), Color.BLACK, new Color(210, 210, 210),"checkerPieceBlack.png","checkerPieceRed.png");
-                Color textColor = theme.getForegroundColor();
-                Color backgroundColor = theme.getBackgroundColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(three);
+                System.out.println("Theme three");
+                System.out.println(theme.getTheme());
+                Color textColor = three.getForegroundColor();
+                Color backgroundColor = three.getBackgroundColor();
+                Color foregroundButtonColor = three.getForegroundButtonColor();
+                Color backgroundButtonColor = three.getBackgroundButtonColor();
+
 
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -580,7 +612,7 @@ public class GUI
 
                 mainPanel.setBackground(backgroundColor);
                 settingsPanel.setBackground(backgroundColor);
-
+                
             }
         });
 
@@ -637,23 +669,23 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String player1KingImage = "frog1King.png";
-                String player2KingImage = "frog2King.png";
 
                 //theme creation
-                Theme theme = new Theme(new Color(252,224,61),new Color(115, 14, 65), Color.BLACK, new Color(255, 243, 176),"niblet2.0.png","kernal2.0.png");
-                Color backgroundColor = theme.getBackgroundColor();
-                Color textColor = theme.getForegroundColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(four);
+                System.out.println("Theme four");
+                System.out.println(theme.getTheme());
+                Color backgroundColor = four.getBackgroundColor();
+                Color textColor = four.getForegroundColor();
+                Color backgroundButtonColor = four.getBackgroundButtonColor();
+                Color foregroundButtonColor = four.getForegroundButtonColor();
 
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -708,23 +740,23 @@ public class GUI
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                String player1KingImage = "heart1King.png";
-                String player2KingImage = "heart2King.png";
 
                 //theme creation
-                Theme theme = new Theme(new Color(180, 0, 90),new Color(255, 160, 170), Color.BLACK, new Color(255, 190, 190),"heart1.png","heart2.png");
-                Color textColor = theme.getForegroundColor();
-                Color backgroundColor = theme.getBackgroundColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(five);
+                System.out.println("Theme five");
+                System.out.println(theme.getTheme());
+                Color textColor = five.getForegroundColor();
+                Color backgroundColor = five.getBackgroundColor();
+                Color foregroundButtonColor = five.getForegroundButtonColor();
+                Color backgroundButtonColor = five.getBackgroundButtonColor();
 
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -778,24 +810,24 @@ public class GUI
         {
             @Override
             public void actionPerformed(ActionEvent e) 
-            {
-                String player1KingImage = "frog1King.png";
-                String player2KingImage = "frog2King.png";     
+            {  
 
                 //theme creation
-                Theme theme = new Theme(new Color(10, 0, 90),new Color(210, 210, 210), new Color(10, 0, 90), new Color(240,240,240),"checkerPieceBlack.png","checkerPieceRed.png");
-                Color textColor = theme.getForegroundColor();
-                Color backgroundColor = theme.getBackgroundColor();
-                Color foregroundButtonColor = theme.getForegroundButtonColor();
-                Color backgroundButtonColor = theme.getBackgroundButtonColor();
-                String player1Image = theme.getPlayer1Image();
-                String player2Image = theme.getPlayer2Image();
+                theme.setTheme(six);
+                System.out.println("Theme six");
+                System.out.println(theme.getTheme());
+                Color textColor = six.getForegroundColor();
+                Color backgroundColor = six.getBackgroundColor();
+                Color foregroundButtonColor = six.getForegroundButtonColor();
+                Color backgroundButtonColor = six.getBackgroundButtonColor();
 
                 //text background colors
                 cobber.setBackground(backgroundColor);
                 checkers.setBackground(backgroundColor);
                 themesLabel.setBackground(backgroundColor);
                 soundLabel.setBackground(backgroundColor);
+                rectangle.setBackground(backgroundColor);
+                //rectangle.setForeground(backgroundColor);
                 
                 //text colors
                 cobber.setForeground(textColor);
@@ -913,4 +945,6 @@ public class GUI
             System.out.println(e);
         }
     }
+
+    
 }

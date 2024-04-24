@@ -1,11 +1,15 @@
 
 import javax.swing.*;
+import javax.swing.ImageIcon;
+
 
 
 public class Piece extends JLabel {
 
 
     String side = "";
+    String imageFile;
+    private ImageIcon icon;
 
     boolean kinged;
 
@@ -14,34 +18,34 @@ public class Piece extends JLabel {
         return this.kinged;
     }
 
-    public void setKinged(boolean kinged) 
+    public void setKingedPlayer1(boolean kinged, String image) 
     {
         this.kinged = kinged;
+        ImageIcon player1KingImage = new ImageIcon(image);
+        setIcon(player1KingImage);
+        
+    }
+    public void setKingedPlayer2(boolean kinged, String image)
+    {
+        this.kinged = kinged;
+        ImageIcon player2KingImage = new ImageIcon(image);
+        setIcon(player2KingImage);
     }
 
-    public String getSide() {
+    public String getSide() 
+    {
 		return this.side;
 	}
+
     public void setSide(String side)
     {
 		this.side = side;
 	}
 
-    public void setPlayer1(String image)
-    {
 
-        String imageFile = image;
-        ImageIcon player1Image = new ImageIcon(imageFile);
-        setIcon(player1Image);
-        repaint();
-    }
-
-    public void setPLayer2(String image)
+    public String returnImageFile()
     {
-        String imageFile = image;
-        ImageIcon player2Image = new ImageIcon(imageFile);
-        setIcon(player2Image);
-        repaint();
+        return imageFile;
     }
 
     public Piece(String side) 
@@ -54,4 +58,13 @@ public class Piece extends JLabel {
     public Piece() {
        
     }
+
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;
+    }
+
+    public ImageIcon getIcon() {
+        return icon;
+    }
+
 }
